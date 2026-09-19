@@ -8,32 +8,83 @@ velqivo-project/
  └── frontend/   React dashboard (Vite + Tailwind v4)
 ```
 
-Both are verified working:
-- **Backend**: already tested end-to-end by you — Postgres via Docker, `mvn spring-boot:run`, confirmed POST/GET via curl.
-- **Frontend**: freshly scaffolded, dependencies installed, and `npm run build` completes with zero errors.
+## Requirements
 
-## Run order (always this sequence)
+Install the following before running the project:
 
-### 1. Start Postgres (Docker)
+- Java 17 or newer
+- Maven 3.8 or newer
+- Node.js 18 or newer and npm
+- Docker Desktop or Docker Engine with Docker Compose support
+- Available local ports `5432`, `8080`, and `5173`
+
+The backend uses PostgreSQL with these local defaults:
+
+| Setting | Value |
+|---------|-------|
+| Database | `velqivo` |
+| Username | `postgres` |
+| Password | `yourpassword` |
+| Port | `5432` |
+
+## How to run
+
+Run the following commands from the project root. Keep the backend and frontend terminals open while using the application.
+
+### 1. Start PostgreSQL
+
+For the first run, create the database container:
+
+```bash
+docker run --name velqivo-db \
+  -e POSTGRES_PASSWORD=yourpassword \
+  -e POSTGRES_DB=velqivo \
+  -p 5432:5432 \
+  -d postgres:16
+```
+
+On later runs, start the existing container:
+
 ```bash
 docker start velqivo-db
 ```
-(If the container doesn't exist yet, use the original `docker run` command from earlier — but you already created it, so `docker start` reuses it.)
 
-### 2. Start the backend — Terminal 1
+### 2. Start the backend
+
+Open Terminal 1:
+
 ```bash
-cd velqivo-project/backend
+cd backend
 mvn spring-boot:run
 ```
-Leave this running. Confirm: `curl http://localhost:8080/api/decisions`
 
-### 3. Start the frontend — Terminal 2
+The API runs at `http://localhost:8080`. Verify it with:
+
 ```bash
-cd velqivo-project/frontend
+curl http://localhost:8080/api/decisions
+```
+
+### 3. Start the frontend
+
+Open Terminal 2:
+
+```bash
+cd frontend
 npm install
 npm run dev
 ```
-Open the printed URL (usually `http://localhost:5173`).
+
+Open the URL printed by Vite, normally `http://localhost:5173`.
+
+Do not use `npm run rev`; there is no `rev` script. Use `npm run dev` to start the development server.
+
+### 4. Stop the project
+
+Press `Ctrl+C` in the backend and frontend terminals, then stop PostgreSQL:
+
+```bash
+docker stop velqivo-db
+```
 
 ## Notes on this merge
 
